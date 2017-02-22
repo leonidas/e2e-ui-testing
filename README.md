@@ -51,4 +51,4 @@ When running end-to-end tests the following services are running:
   - Copy-as-is.
 
 ## Observing the test execution
-You may view the browser execution while the tests are running. For this purpose, the `selenium` container maps the port `5901` to host. Use any `VNC` client and connect to `localhost:5901` after the container has started. The same VNC session can be left running across multiple test runs.
+You may view the browser execution while the tests are running. For this purpose, the `selenium` container maps the port `5901` to host. Use any `VNC` client and connect to `localhost:5901` after the container has started. The default password to the VNC connection appears to be `secret`. The same VNC session can be left running across multiple test runs.
