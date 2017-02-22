@@ -1,0 +1,22 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node --harmony server/index.js",
+    "ui-tests": "wdio test-runner/webdriverio.conf.js"
+  },
+  "author": "toni.jyrkinen@leonidasoy.fi",
+  "license": "MIT",
+  "dependencies": {
+    "config": "^1.25.1",
+    "knex": "^0.12.7",
+    "koa": "^2.0.0",
+    "pg": "^6.1.2"
+  },
+  "devDependencies": {
+    "wdio": "^0.3.3",
+    "wdio-mocha-framework": "^0.5.8"
+  }
+}

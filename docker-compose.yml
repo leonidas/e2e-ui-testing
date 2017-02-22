@@ -1,0 +1,80 @@
+version: "2"
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: appserver
+    command: npm start
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./server:/opt/app/server
+      - /opt/app/node_modules
+    environment:
+      - POSTGRES_HOST=database
+      - APP_PORT=8000
+    depends_on:
+      - database
+
+  database:
+    image: postgres
+    expose:
+      - "5432"
+    environment:
+      - POSTGRES_USER=pguser
+      - POSTGRES_PASSWORD=pgpass
+      - POSTGRES_DB=pgdb
+
+  test-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: appserver
+    command: npm run start
+    expose:
+      - "8000"
+    volumes:
+      - /opt/app/node_modules
+      - ./server:/opt/app/server
+    environment:
+      - POSTGRES_HOST=test-database
+      - NODE_ENV=test
+    depends_on:
+      - test-database
+
+  test-database:
+    image: postgres
+    expose:
+      - "5432"
+    environment:
+      - POSTGRES_USER=pguser
+      - POSTGRES_PASSWORD=pgpass
+      - POSTGRES_DB=pgdb
+    volumes:
+      # Apply custom database configuration for faster (but non-durable) operations
+      - ./docker_overrides/test-database/postgresql.conf.sample:/usr/share/postgresql/postgresql.conf.sample
+
+  test-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: appserver
+    command: ./wait-for-it.sh --timeout=60 test-database:5432 test-server:8000 -- npm run ui-tests
+    volumes:
+      - ./test-ui:/opt/app/test-ui
+      - ./test-runner:/opt/app/test-runner
+    environment:
+      - POSTGRES_HOST=test-database
+      - NODE_ENV=test
+    depends_on:
+      - test-server
+      - test-database
+      - selenium
+
+  selenium:
+    image: selenium/standalone-chrome-debug
+    expose:
+      - "4444"
+    ports:
+      - 5901:5900
